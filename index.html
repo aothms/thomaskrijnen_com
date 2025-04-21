@@ -1,0 +1,599 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta charset="utf-8">
+<title></title>
+<meta name="description" content="">
+<meta name="author" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css?family=Crimson+Text:400,400i" rel="stylesheet" />
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" />
+<link href='jquery.fullPage.css' rel='stylesheet' type='text/css'>
+<script src='jquery.min.js'></script>
+<script src='jquery.fullPage.min.js'></script>
+<!--[if lt IE 9]>
+<script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+<style>
+body { font-family: 'Crimson Text', serif; font-size: 8pt; line-height: 12pt; color: #333; }
+h1, h2 { margin: 0; padding: 0; font-weight: normal; }
+h3 { font-weight: normal; }
+h1 { font-size: 27pt; line-height: 27pt; }
+h2 { font-size: 12pt; line-height: 12pt; }
+.contact h2 { line-height: 18pt; }
+h4, h5, h6, h7 { font-size: 12pt; line-height: 18pt; margin: 0; padding: 0; font-weight: normal; }
+h4, h5, h6 { display: none; }
+.thomas, .thomas2 { float: left; padding-right: 12px; }
+.thomas { width: 64px; height: 64px; }
+.thomas2 { width: 128px; height: 128px; }
+a { color: #999; text-decoration: none; }
+.home a { border-bottom: dotted 1px #999; }
+a:hover { color: #666; border-color: #666; }
+#menu { border-bottom: solid 1px #ccc; position: fixed; z-index: 70; width: 100%; background:white; }
+#menu ul, #menu li { display: inline; padding: 0; margin: 0; }
+#menu a { border: none; padding-bottom: 3px; display: inline-block; margin-right: 8pt; }
+#menu .active a { color: #333; }
+.publications ul { padding: 0; margin: 0; /* font-size: 10pt; line-height: 14pt; */ } 
+.publications ul li { padding: 0; list-style-type: none; width: 100%; /* overflow: hidden; */ } 
+.publications ul li p { padding: 0; margin: 0 0 18pt 0; /* width: 10000px; */ }
+.projects img { width: 100%; height: auto; }
+
+.projects a.nolink{
+ cursor: default;
+}
+.projects a.link,
+.projects a.nolink{
+ display: block;
+ overflow: hidden;
+ margin: 0 auto;
+ outline: 0;
+}
+.projects a.link:hover img.off,
+.projects a.nolink:hover img.off{
+ display:none;
+}
+.projects a img{
+ display: block;
+}
+.projects {
+ text-align: center;
+}
+.projects .description {
+ width: 50%;
+ margin: 0 auto;
+}
+
+a.next {
+ clear: both;
+ display: inline-block;
+ border: solid 1px #eee;
+ border-radius: 2px;
+ padding: 0 8px;
+}
+
+a.next .fa {
+ vertical-align: text-bottom;
+}
+
+.contact_center {
+ width: 420px;
+ text-align: center;
+ margin: 0 auto;
+}
+.contact_center h1 {  padding-top: 12pt; }
+.contact_center h1,
+.contact_center h2 {
+ text-align: left;
+}
+.contact_center .smaller {
+ padding: 36px;
+ font-size: 10pt;
+ line-height: 15pt;
+}
+
+.content { padding: 10px; }
+#menu div { padding: 10px 10px; }
+.projects a.link,
+.projects a.nolink{
+    height: 100px;
+    width: 300px;
+}
+
+@media screen and (min-width: 700px) {
+    body { font-size: 10pt; line-height: 15pt;  }
+    .content { padding: 50px; }
+    #menu div { padding: 10px 50px; }
+    .projects a.link,
+    .projects a.nolink{
+         height: 200px;
+         width: 600px;
+     }
+}
+
+@media screen and (min-width: 1000px) {
+    body { font-size: 12pt; line-height: 18pt;  }
+    .content { padding: 200px; }
+    #menu div { padding: 10px 200px; }
+    .projects a.link,
+    .projects a.nolink{
+         height: 267px;
+         width: 800px;
+     }
+}
+
+</style>
+<script>
+var anchors = ['home', 'projects', 'project_page1', 'project_page2', 'project_page3', 'project_page4', 'project_page5', 'publications'];
+function chop(el) {
+    var moveTo = null;
+    var pp = 1;
+    $("li", el).each(function(i, n) {
+        if (moveTo) {
+            $(n).appendTo(moveTo);
+        }
+        if (i % 6 == 5) {
+            var p = $(n).parent();
+            var stack = [];
+            while (!p.is(el.parent())) {
+                stack.push($(p[0].cloneNode()));
+                p = p.parent();
+            }
+            anchors.push('publication_page' + (pp++));
+            var dest = el.parent();
+            var first = true;
+            for (var i = stack.length - 1; i >= 0; i --) {
+                if (first) {
+                    $('.contact').parent().before(stack[i]);
+                    dest = stack[i];
+                    first = false;
+                } else {
+                    dest = stack[i].appendTo(dest);
+                }
+            }
+            moveTo = dest;
+        }
+    });
+}
+function godown() {
+    $(".content").each(function(i, n) {
+        var li = n.classList;
+        var next, more, isProj, isPub;
+        for (var j = 0; j < n.classList.length; ++j) {
+            var cls = n.classList[j];
+            isProj = cls == "projects";
+            isPub = cls == "publications";
+            if (isProj || isPub) {
+                break;
+            }
+        }
+        if (isProj || isPub) {
+            var cts = $(".content");
+            var idx = cts.index(n);
+            if (cts[idx].className == cts[idx+1].className) {
+                next = anchors[idx+1];
+                more = isProj ? "projects" : "publications";
+            }
+        }
+        if (next && more) {
+            $(n).append('<a href="#'+next+'" class="next"><i class="fa fa-angle-double-down" aria-hidden="true"></i> more '+more+'</a>');
+        }
+    });
+}
+$(document).ready(function() {
+    chop($('.publications').parent());
+    godown();
+    anchors.push('contact');
+    $('#fullpage').fullpage({
+        anchors: anchors,
+        navigation: true,
+        autoScrolling: false,
+        fitToSection: false,
+        menu: "#menu",
+    });
+});
+</script>
+<link rel="shortcut icon" href="">
+</head>
+<body>
+<div id='menu'>
+<div>
+<img src='thomas_round_256.png' class='thomas'/>
+<h1>Thomas Krijnen</h1>
+<h2>built environment research and development</h2>
+<br style='clear:both'>
+<ul>
+<li data-menuanchor="home"><a href='#home'>home</a>
+<li data-menuanchor="projects"><a href='#projects'>projects</a>
+<li data-menuanchor="publications"><a href='#publications'>publications</a>
+<li data-menuanchor="contact"><a href='#contact'>contact</a>
+</ul>
+</div>
+</div>
+<div id="fullpage">
+<div class='section'>
+<div class='content home'>
+Welcome to the website of Thomas Krijnen. <!--Somebody unfortunately without hobbies, although he spends a lot of time near his computer and guitars.--><br /><br />
+
+<!--Over the years Thomas has specialized himself in engaging the built environment (and apple pie) from an IT-oriented perspective. In fact, he hopes to have someday trained his computer to the extent that she (indeed, his laptop is feminine) will do all work for him while Thomas himself can sit back and enjoy his well-deserved retirement. However, for the time being, he researches topics such as Building Information Modelling.<br /><br />-->
+
+<!--Thomas is an unmistakable agnostic, however, one of his stronger beliefs is that architecture and music were in fact once the same discipline, but were deliberately separated in order to increase financial revenue for its practitioners. In an attempt to prove this, Thomas wrote his graduation thesis on &lsquo;The Musicality of Architecture&rsquo;.<br /><br />-->
+
+Thomas has worked as a Senior Software Engineer for the software development and consultancy firm &lsquo;Gehry&nbsp;Technologies&rsquo;. After that, Thomas finished his PhD research on <i>efficient storage and retrieval
+of detailed building models</i> in 2019. Thomas is the founder of a company called <a href='http://AECgeeks.com'>AECgeeks</a> that specializes in software development and consultancy for the Architecture Engineering and Construction industry.
+</div>
+</div>
+<div class='section'><div class='content projects'>
+    <a href='http://ifcopenshell.org' class='link'>
+        <img src='imgs/ifcopenshell.png'>
+    </a>
+    <div class='description'>
+        <h3>IfcOpenShell</h3>
+        IfcOpenShell is one of the leading open source implementations of the IFC file format and is geared towards providing an easy interface to extract and manipulate geometry in IFC files. Thomas initiated the project and is the lead developer.
+    </div>
+</div></div>
+<div class='section'><div class='content projects'>
+    <a href='http://archikey.com' class='link'>
+        <img src='imgs/archikey-images.jpg' class='off'>
+        <img src='imgs/archikey-logo.png'>
+    </a>
+    <div class='description'>
+        <h3>Archikey.com</h3>
+        Archikey.com is an free and open architecture encyclopaedia with a semi-semantical data model that allows for highly specialized queries. Thomas initiated the project and is currently the only developer as well as a major contributor of the building data and pictures.
+    </div>
+</div></div>
+<div class='section'><div class='content projects'>
+    <a href='#' class='link'>
+        <img src='imgs/sine.jpg' class='off'>
+        <img src='imgs/sine-waveform.jpg'>
+    </a>
+    <div class='description'>
+        <h3>Evaluation of Acoustics using Ray-tracing</h3>
+        EAR is a ray-tracer that models the propagation of sound for architectural acoustics. In addition it provides tools for easily sketching auditory walk-throughs. EAR has been developed as part of Thomas' graduation thesis.
+    </div>
+</div></div>
+<div class='section'><div class='content projects'>
+    <a href='/jsbotdf/' class='link'>
+    <img src='imgs/jsbotdf-unlit.jpg' class='off'>
+    <img src='imgs/jsbotdf-lit.jpg'>
+    </a>
+    <div class='description'>
+        <h3>Johann Sebastian Bach on the Dance Floor</h3>
+        Johann Sebastian Bach on the Dance Floor is an interactive art project that aims to investigate the spatiality of music and the notion of taking a photograph of this musical space.
+    </div>
+</div></div>
+<div class='section'><div class='content projects'>
+    <a href='http://toegankelijkbouwen.zorgenbouw.nl/' class='link'>
+    <img src='imgs/tno-unlit.jpg' class='off'>
+    <img src='imgs/tno-lit.jpg'>
+    </a>
+    <div class='description'>
+        <h3>Building Accessibility Guidelines for TNO</h3>
+        For TNO, a renowned research institution in the Netherlands, Thomas built an on-line aggregation of several sources of building accessibility guidelines, composed into an interactive design that can be navigated on-line. 
+    </div>
+</div></div>
+<div class='section'><div class='content projects'>
+    <a href='/bbs/' class='link'>
+    <img src='imgs/bbs.jpg'>
+    </a>
+    <div class='description last'>
+        <h3>Blender Behavioural Simulation</h3>
+        For a university project Thomas built a behavioural simulation system that allowed designers to engage a behavioural simulation with autonomous actors while simultaneously modelling their design and have the actors respond to the design decisions.
+    </div>
+</div></div>
+<div class='section'><div class='content publications'>
+
+<h4>Article</h4>
+				
+					<h5>Scientific peer reviewed</h5>
+					
+						<div class="ep-yearList-yearWrap">
+							<h6 class="ep-yearList-year">2017</h6>
+							<div class="ep-yearList-yearContent">
+								<ul>
+									
+										<li>
+											<p>
+												
+													El-Diraby, T., <b>Krijnen, T.</b> & Papagelis, M. (2017).  <a href=https://www.tue.nl/en/publication/ep/p/d/ep-uid/80b2d9a0-c5bf-4e35-89e9-59ee9ef29ba4/>BIM-based collaborative design and socio-technical analytics of green buildings</a>. <em>Automation in Construction</em>.
+												
+											</p>
+										</li>
+									
+										<li>
+											<p>
+												
+													<b>Krijnen, T.F.</b> & Beetz, J. (2017).  <a href=https://www.tue.nl/en/publication/ep/p/d/ep-uid/6a4bac03-3453-4287-87d6-e84c40ab9d7a/>An IFC schema extension and binary serialization format to efficiently integrate point cloud data into building models</a>. <em>Advanced Engineering Informatics</em>.
+												
+											</p>
+										</li>
+									
+										<li>
+											<p>
+												
+													Pauwels, P., <b>Krijnen, T.</b>, Terkaj, W. & Beetz, J. (2017).  <a href=https://www.tue.nl/en/publication/ep/p/d/ep-uid/94cd8a36-049e-4e02-a6e0-624ff47b150f/>Enhancing the ifcOWL ontology with an alternative representation for geometric data</a>. <em>Automation in Construction</em>, <em>80</em>, 77-94.
+												
+											</p>
+										</li>
+									
+								</ul>
+							</div>
+						</div>
+					
+						<div class="ep-yearList-yearWrap">
+							<h6 class="ep-yearList-year">2016</h6>
+							<div class="ep-yearList-yearContent">
+								<ul>
+									
+										<li>
+											<p>
+												
+													Hornikx, M.C.J., <b>Krijnen, T.F.</b> & van Harten, L. (2016).  <a href=https://www.tue.nl/en/publication/ep/p/d/ep-uid/02379176-36db-49cb-a7b5-50dea06ee42f/>OpenPSTD : The open source pseudospectral time-domain method for acoustic propagation</a>. <em>Computer Physics Communications</em>, <em>203</em>, 298-308.
+												
+											</p>
+										</li>
+									
+										<li>
+											<p>
+												
+													Wang, T., <b>Krijnen, T.F.</b> & de Vries, B. (2016).  <a href=https://www.tue.nl/en/publication/ep/p/d/ep-uid/e98b2ea5-4f19-4014-86ab-ace5231fd83c/>Combining GIS and BIM for facility reuse - a profiling approach</a>. <em>Research in Urbanism Series</em>, <em>4</em>, 185-204.
+												
+											</p>
+										</li>
+									
+								</ul>
+							</div>
+						</div>
+					
+				
+					<h5>Scientific not peer reviewed</h5>
+					
+						<div class="ep-yearList-yearWrap">
+							<h6 class="ep-yearList-year">2014</h6>
+							<div class="ep-yearList-yearContent">
+								<ul>
+									
+										<li>
+											<p>
+												
+													van Berlo, L.A.H.M. & <b>Krijnen, T.F.</b> (2014).  <a href=https://www.tue.nl/en/publication/ep/p/d/ep-uid/e68ce4b1-131b-4fec-b763-4257c89e35f7/>Using the BIM collaboration format in a server based workflow</a>. <em>Procedia Environmental Sciences</em>, <em>22</em>, 325-332.
+												
+											</p>
+										</li>
+									
+								</ul>
+							</div>
+						</div>
+					
+				
+			
+				<h4>Conference contribution</h4>
+				
+					<h5>Scientific peer reviewed</h5>
+					
+						<div class="ep-yearList-yearWrap">
+							<h6 class="ep-yearList-year">2017</h6>
+							<div class="ep-yearList-yearContent">
+								<ul>
+									
+										<li>
+											<p>
+												
+													Koo, B., Shin, B. & <b>Krijnen, T.F.</b> (2017).  <a href=https://www.tue.nl/en/publication/ep/p/d/ep-uid/e138cba8-7894-4f77-94a9-311611307f6d/>Employing outlier and novelty detection for checking the integrity of BIM to IFC entity associations</a>. <em>Proceedings of the 34th International Symposium on Automation and Robotics in Construction (ISARC 2017), 28 June - 1 July, Taipe, Taiwan</em>
+												
+											</p>
+										</li>
+									
+								</ul>
+							</div>
+						</div>
+					
+						<div class="ep-yearList-yearWrap">
+							<h6 class="ep-yearList-year">2016</h6>
+							<div class="ep-yearList-yearContent">
+								<ul>
+									
+										<li>
+											<p>
+												
+													Beetz, J., Blümel, I., Dietze, S., Fetahui, B., Gadiraju, U., Hecher, M., <b>Krijnen, T.F.</b>, Lindlar, M., Tamke, M., Wessel, R. & Yu, R. (2016).  <a href=https://www.tue.nl/en/publication/ep/p/d/ep-uid/3626e98c-2251-4d52-85b8-1b4af70d41ca/>Enrichment and preservation of architectural knowledge</a>. In S. Münster, M. Ioannides, P. Kuroczyński, M. Pfarr-Harfst, S. Münster, M. Ioannides, P. Kuroczyński & M Pfarr-Harfst (Eds.), <em>3D Research Challenges in Cultural Heritage II</em> (pp. 1-25). (Lecture notes in computer science, No. 10025). Berlin: Springer International.
+												
+											</p>
+										</li>
+									
+										<li>
+											<p>
+												
+													El-Diraby, T., <b>Krijnen, T.F.</b> & Papagelis, M. (2016).  <a href=https://www.tue.nl/en/publication/ep/p/d/ep-uid/7714437b-14c8-4fe9-a39e-86a0d6d28090/>Green2.0 : socio-technical analytics of green buildings</a>. <em>Transforming the Future of Infrastructure through Smarter Information: Proceedings of the International Conference on Smart Infrastructure and Construction, 27-29 June 2016, Cambridge, United Kingdom</em> (pp. 551-556).
+												
+											</p>
+										</li>
+									
+										<li>
+											<p>
+												
+													El-Diraby, T., <b>Krijnen, T.F.</b> & Papagelis, M. (2016).  <a href=https://www.tue.nl/en/publication/ep/p/d/ep-uid/84823ac9-4f93-4f18-ae96-c08945796785/>Green 2.0 : socio-technical analytics of green buildings</a>. <em>33rd International Conference of CIB W78, October 31-November 2 2016, Brisbane, Australia</em>
+												
+											</p>
+										</li>
+									
+										<li>
+											<p>
+												
+													<b>Krijnen, T.F.</b> & Beetz, J. (2016).  <a href=https://www.tue.nl/en/publication/ep/p/d/ep-uid/6f073d51-3656-4876-819d-c74a1abae42c/>Efficient binary serialization of IFC models using HDF5</a>. <em>ICCCBE2016: 16th International Conference on Computing in Civil and Building Engineering, Osaka, July 6-8, 2016</em>
+												
+											</p>
+										</li>
+									
+								</ul>
+							</div>
+						</div>
+					
+						<div class="ep-yearList-yearWrap">
+							<h6 class="ep-yearList-year">2015</h6>
+							<div class="ep-yearList-yearContent">
+								<ul>
+									
+										<li>
+											<p>
+												
+													<b>Krijnen, T.F.</b> & Tamke, M. (2015).  <a href=https://www.tue.nl/en/publication/ep/p/d/ep-uid/34264b1e-594c-474a-8d74-e6f0e5df6d06/>Assessing implicit knowledge in BIM models with machine learning</a>. In M. Tamke, B. Faircloth, M. Ramsgaard Thomsen, F. Schreuder & C. Gengnagel (Eds.), <em>Modelling behaviour. Design Modelling Symposium</em> (pp. 397-406). Springer International Publishing.
+												
+											</p>
+										</li>
+									
+										<li>
+											<p>
+												
+													<b>Krijnen, T.F.</b>, Beetz, J., Ochmann, S., Vock, R. & Wessel, R. (2015).  <a href=https://www.tue.nl/en/publication/ep/p/d/ep-uid/43a0bf72-46e9-417b-9cbe-cce78cbfe010/>Towards extending IFC with point cloud data</a>. <em>Proceedings of the 22nd EG-ICE workshop, 13-15 June 2015, Eindhoven, The Netherlands</em> (pp. 146-156). Eindhoven.
+												
+											</p>
+										</li>
+									
+										<li>
+											<p>
+												
+													Pauwels, P., Terkaj, W., <b>Krijnen, T.F.</b> & Beetz, J. (2015).  <a href=https://www.tue.nl/en/publication/ep/p/d/ep-uid/a823ddff-2f9d-4645-954a-e04ca9ef881d/>Coping with lists in the ifcOWL ontology</a>. <em>Proceedings of the 22nd EG-ICE Workshop 2015, 13-15 June 2015, Eindhoven, The Netherlands</em> (pp. 111-120). Eindhoven: s.n.
+												
+											</p>
+										</li>
+									
+								</ul>
+							</div>
+						</div>
+					
+						<div class="ep-yearList-yearWrap">
+							<h6 class="ep-yearList-year">2014</h6>
+							<div class="ep-yearList-yearContent">
+								<ul>
+									
+										<li>
+											<p>
+												
+													Tamke, M., Jensen, M.M., Beetz, J., <b>Krijnen, T.F.</b> & Edvardsen, D.F (2014).  <a href=https://www.tue.nl/en/publication/ep/p/d/ep-uid/fad9df4c-7102-4a25-9a31-b964e584abed/>Building information deduced : state and potentials for Information query in building information modelling</a>. In E.M. Thompson (Ed.), <em>Fusion : Proceedings of the 32nd eCAADe Conference, 10-12 Oktober 2014, Newcastle upon Tyne, England</em> (pp. 375-384).
+												
+											</p>
+										</li>
+									
+								</ul>
+							</div>
+						</div>
+					
+						<div class="ep-yearList-yearWrap">
+							<h6 class="ep-yearList-year">2012</h6>
+							<div class="ep-yearList-yearContent">
+								<ul>
+									
+										<li>
+											<p>
+												
+													<b>Krijnen, T.F.</b>, Beetz, J., <a href=/en/university/departments/built-environment/the-department-of-the-built-environment/staff/detail/ep/e/d/ep-uid/20030012/>Voorthuis, J.C.T.</a> & <a href=/en/university/departments/built-environment/the-department-of-the-built-environment/staff/detail/ep/e/d/ep-uid/19860999/>Vries, de, B.</a> (2012).  <a href=https://www.tue.nl/en/publication/ep/p/d/ep-uid/08191a27-21fc-49a0-8802-2b265da67c0e/>Explauralisation : the experience of exploring architecture made audible</a>. In H. Achten, D. Matejovská, J. Pavlicek & J. Hulín (Eds.), <em>Digital Physicality – Proceedings of the 30th International Conference on Education and research in Computer Aided Architectural Design in Europe, Prague, Czech Republic, September 12-14, 2012, Volume 1</em> (pp. 593-599). (1). Prague, Czech Republic: eCAADe (Education and research in Computer Aided Architectural Design in Europe) and ČVUT, Faculty of Architecture.
+												
+											</p>
+										</li>
+									
+								</ul>
+							</div>
+						</div>
+					
+						<div class="ep-yearList-yearWrap">
+							<h6 class="ep-yearList-year">2009</h6>
+							<div class="ep-yearList-yearContent">
+								<ul>
+									
+										<li>
+											<p>
+												
+													<b>Krijnen, T.F.</b>, Beetz, J. & <a href=/en/university/departments/built-environment/the-department-of-the-built-environment/staff/detail/ep/e/d/ep-uid/19860999/>Vries, de, B.</a> (2009).  <a href=https://www.tue.nl/en/publication/ep/p/d/ep-uid/b6a16752-c92e-4412-b848-1d08624ef0dd/>Airport Schiphol - Behavioural Simulation of a Design Concept</a>. In B Coloakoglu & G Cagdas (Eds.), <em>Computation : the new realm of architectural design : proceedings of the 27th conference on education and research in computer aided architectural design in Europe, Istanbul, Sept. 2009</em> (pp. 559-565). Istanbul: Cencler Printing.
+												
+											</p>
+										</li>
+									
+								</ul>
+							</div>
+						</div>
+					
+				
+					<h5>Scientific not peer reviewed</h5>
+					
+						<div class="ep-yearList-yearWrap">
+							<h6 class="ep-yearList-year">2016</h6>
+							<div class="ep-yearList-yearContent">
+								<ul>
+									
+										<li>
+											<p>
+												
+													<b>Krijnen, T.F.</b> & van Berlo, L.A.H.M. (2016).  <a href=https://www.tue.nl/en/publication/ep/p/d/ep-uid/b21e76c4-f470-4927-89d7-b2f5b77a925a/>Methodologies for requirement checking on building models : a technology overview</a>. In H. Timmermans (Ed.), <em>DDSS2016: 13th International Conference on Design &amp; Decision Support Systems in Architecture and Urban Planning, Eindhoven, June 27-28, 2016</em> (pp. 1-11). Eindhoven: Technische Universiteit Eindhoven.
+												
+											</p>
+										</li>
+									
+										<li>
+											<p>
+												
+													Papagelis, M., <b>Krijnen, T.F.</b>, Elshenawy, M., Konomi, T., Fang, R. & El-Diraby, T. (2016).  <a href=https://www.tue.nl/en/publication/ep/p/d/ep-uid/69622001-26c4-4e45-b29f-c05eab0fd0a7/>Green2.0 : enabling complex interactions between buildings and people</a>. <em>CSCW '16 Companion Proceedings of the 19th ACM Conference on Computer Supported Cooperative Work and Social Computing Companion, 26 February - 2 March 2016, San Francisco, California</em> (pp. 77-80). New York: ACM.
+												
+											</p>
+										</li>
+									
+								</ul>
+							</div>
+						</div>
+					
+						<div class="ep-yearList-yearWrap">
+							<h6 class="ep-yearList-year">2015</h6>
+							<div class="ep-yearList-yearContent">
+								<ul>
+									
+										<li>
+											<p>
+												
+													<b>Krijnen, T.F.</b> & Feringa, J. (2015).  <a href=https://www.tue.nl/en/publication/ep/p/d/ep-uid/0be19cdc-3726-494c-b39e-8f77dd03a8d9/>BIM for robotic manufacturing</a>. <em>Proceedings of the International Association for Shell and Spatial Structures (IASS) Symposium, 17-20 August 2015, Amsterdam, The Netherlands</em> (pp. 1-11).
+												
+											</p>
+										</li>
+									
+								</ul>
+							</div>
+						</div>
+					
+						<div class="ep-yearList-yearWrap">
+							<h6 class="ep-yearList-year">2014</h6>
+							<div class="ep-yearList-yearContent">
+								<ul>
+									
+										<li>
+											<p>
+												
+													<b>Krijnen, T.F.</b> & Hornikx, M.C.J. (2014).  <a href=https://www.tue.nl/en/publication/ep/p/d/ep-uid/e8b92c36-241d-4096-be37-1ea94887287c/>openPSTD : the open source implementation of the Pseudo Spectral Time-Domain method</a>. <em>Proceedings of Forum Acusticum</em> (pp. 1-6). Krakow: European Acoustics Association, EAA.
+												
+											</p>
+										</li>
+									
+								</ul>
+							</div>
+						</div>
+
+</div></div>
+
+<div class='section'>
+<div class='content contact'>
+<div class='contact_center'>
+<img src='thomas_round_256.png' class='thomas2'/>
+<h1>Thomas Krijnen</h1>
+<h2><a href='mailto:mail@thomaskrijnen.com'><i class="fa fa-envelope" aria-hidden="true"></i> mail@thomaskrijnen.com</a></h2>
+<h2><a href='https://twitter.com/aothms'   ><i class="fa fa-twitter" aria-hidden="true"></i>  @aothms               </a></h2>
+<br style="clear:both" />
+<div class='smaller'>
+Dutch Chamber of Commerce number: 59997338 (KvK nummer)<br />
+VAT number: NL042782697B01 (BTW nummer)
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</body>
+</html>
